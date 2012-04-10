@@ -114,6 +114,6 @@ for i in `seq 0 $((nrepos-1))`; do
 						       '${repos_paths[$i]}',
 						       '${repos_types[$i]}',
 						       '',
-						       '--- {}')"
+						       '')"
 done
 
