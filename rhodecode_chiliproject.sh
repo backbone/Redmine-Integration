@@ -6,7 +6,7 @@ RHODECODE_SQLITE_PATH=/home/rhodecode/rhodecode/rhodecode.db
 CHILI_MYSQL_USER=redmine
 CHILI_MYSQL_DBNAME=redmine
 CHILI_MYSQL_HOSTNAME=127.0.0.1
-CHILI_REQUIRED_ROLES="Ответственный Разработчик Менеджер Major Developer Manager"
+CHILI_REQUIRED_ROLES="Ответственный Менеджер Major Manager"
 
 # === REMOVE ALL BROKEN REPOSITORY LINKS IN REDMINE MYSQL DATABASE ===
 ALL_MYSQL_REPOS=`mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT url,root_url,id FROM $CHILI_MYSQL_DBNAME.repositories WHERE type='Mercurial' OR type='Repository::Mercurial'" | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+4`
@@ -88,7 +88,7 @@ for i in `seq 0 $((nrepos-1))`; do
 	[ "$PROJECTID" == "" ] && continue
 
 	roles_mysql_string=`echo $CHILI_REQUIRED_ROLES | sed "s~\>~'~g ; s~\<~OR roles.name='~g ; s~^OR ~~"`
-	ROLES=`mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT roles.name
+	ROLES=`mysql --default-character-set=utf8 -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT roles.name
 	                                        FROM $CHILI_MYSQL_DBNAME.roles,$CHILI_MYSQL_DBNAME.member_roles,$CHILI_MYSQL_DBNAME.members
 						WHERE roles.id=member_roles.role_id
 						AND member_roles.member_id=members.id
