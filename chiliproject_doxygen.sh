@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#VARS
-DOC_PATH=/var/doc/redmine
-TMP_PATH=/tmp/redmine-doxygen$RANDOM$RANDOM
+# load config files
+[ -f /etc/chiliproject_doxygen ] && source /etc/chiliproject_doxygen
+[ -f ~/etc/chiliproject_doxygen ] && source ~/etc/chiliproject_doxygen
 
 # table
 project_id=
@@ -14,8 +14,8 @@ identifier=
 # UMASK
 umask 0002
 
-# read redmine.repositories to table
-MYSQL_RESULT=`mysql -h127.0.0.1 -u redmine -e "SELECT project_id, type, root_url FROM redmine.repositories" | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+4`
+# read $MYSQL_DBNAME.repositories to table
+MYSQL_RESULT=`mysql -h127.0.0.1 -u $MYSQL_USER -e "SELECT project_id, type, root_url FROM $MYSQL_DBNAME.repositories" | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+4`
 let n=0
 for v in $MYSQL_RESULT; do
 	let idx=n/3
@@ -28,8 +28,8 @@ for v in $MYSQL_RESULT; do
 done;
 let n/=3
 
-# read redmine.projects to table
-MYSQL_RESULT=`mysql -h127.0.0.1 -u redmine -e "SELECT id, identifier FROM redmine.projects" | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+3`
+# read $MYSQL_DBNAME.projects to table
+MYSQL_RESULT=`mysql -h127.0.0.1 -u $MYSQL_USER -e "SELECT id, identifier FROM $MYSQL_DBNAME.projects" | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+3`
 last_idx=0
 let i=0
 for v in $MYSQL_RESULT; do

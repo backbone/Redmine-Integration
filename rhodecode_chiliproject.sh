@@ -1,12 +1,8 @@
 #!/bin/bash
 
-# VARS
-export LANG=ru_RU.UTF-8
-RHODECODE_SQLITE_PATH=/home/rhodecode/rhodecode/rhodecode.db
-CHILI_MYSQL_USER=redmine
-CHILI_MYSQL_DBNAME=redmine
-CHILI_MYSQL_HOSTNAME=127.0.0.1
-CHILI_REQUIRED_ROLES="Ответственный Менеджер Major Manager"
+# load config files
+[ -f /etc/rhodecode_chiliproject ] && source /etc/rhodecode_chiliproject
+[ -f ~/etc/rhodecode_chiliproject ] && source ~/etc/rhodecode_chiliproject
 
 # === REMOVE ALL BROKEN REPOSITORY LINKS IN REDMINE MYSQL DATABASE ===
 ALL_MYSQL_REPOS=`mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT url,root_url,id FROM $CHILI_MYSQL_DBNAME.repositories WHERE type='Mercurial' OR type='Repository::Mercurial'" | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+4`

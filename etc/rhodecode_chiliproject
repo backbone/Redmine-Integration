@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+
+export LANG=ru_RU.UTF-8
+RHODECODE_SQLITE_PATH=/home/rhodecode/rhodecode/rhodecode.db
+CHILI_MYSQL_USER=redmine
+CHILI_MYSQL_DBNAME=redmine
+CHILI_MYSQL_HOSTNAME=127.0.0.1
+CHILI_REQUIRED_ROLES="Ответственный Менеджер Major Manager"
