@@ -4,7 +4,7 @@
 [ -f /etc/rhodecode_chiliproject ] && source /etc/rhodecode_chiliproject
 [ -f ~/etc/rhodecode_chiliproject ] && source ~/etc/rhodecode_chiliproject
 
-# === REMOVE ALL BROKEN REPOSITORY LINKS IN REDMINE MYSQL DATABASE ===
+# === REMOVE ALL BROKEN REPOSITORY LINKS IN CHILIPROJECT MYSQL DATABASE ===
 ALL_MYSQL_REPOS=`mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT url,root_url,id FROM $CHILI_MYSQL_DBNAME.repositories WHERE type='Mercurial' OR type='Repository::Mercurial'" | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+4`
 repos_to_remove=
 current_url=
@@ -54,7 +54,7 @@ done
 
 # === FOR ALL REPOS FROM RHODECODE DATABASE===
 for i in `seq 0 $((nrepos-1))`; do
-	# === GET DATA FROM REDMINE MYSQL BASE ===
+	# === GET DATA FROM CHILIPROJECT MYSQL BASE ===
 	ALREADY_EXIST=`mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT id
 	                                                FROM $CHILI_MYSQL_DBNAME.repositories
 	                                                WHERE url='${repos_paths[$i]}'
@@ -95,7 +95,7 @@ for i in `seq 0 $((nrepos-1))`; do
 
 	[ "$ROLES" == "" ] && continue
 
-	# === ATTACH RHODECODE REPOSITORY TO REDMINE ===
+	# === ATTACH RHODECODE REPOSITORY TO CHILIPROJECT ===
 	# DEBUG
 	echo "insert $PROJECTID,${repos_paths[$i]},${repos_types[$i]}"
 
