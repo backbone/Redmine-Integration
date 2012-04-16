@@ -1,8 +1,14 @@
 #!/bin/bash
 
 # load config files
-[ -f /etc/rhodecode_chiliproject ] && source /etc/rhodecode_chiliproject
-[ -f ~/etc/rhodecode_chiliproject ] && source ~/etc/rhodecode_chiliproject
+if [ -f /etc/rhodecode_chiliproject ]; then
+	source /etc/rhodecode_chiliproject
+elif [ -f ~/etc/rhodecode_chiliproject ]; then
+	source ~/etc/rhodecode_chiliproject
+else
+	echo "Config file not found ;-("
+	exit -1
+fi
 
 # === REMOVE ALL BROKEN REPOSITORY LINKS IN CHILIPROJECT MYSQL DATABASE ===
 ALL_MYSQL_REPOS=`mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT url,root_url,id FROM $CHILI_MYSQL_DBNAME.repositories WHERE type='Mercurial' OR type='Repository::Mercurial'" | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+4`

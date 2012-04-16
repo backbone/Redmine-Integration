@@ -1,8 +1,14 @@
 #!/bin/bash
 
 # load config files
-[ -f /etc/chiliproject_doxygen ] && source /etc/chiliproject_doxygen
-[ -f ~/etc/chiliproject_doxygen ] && source ~/etc/chiliproject_doxygen
+if [ -f /etc/chiliproject_doxygen ]; then
+	source /etc/chiliproject_doxygen
+elif [ -f ~/etc/chiliproject_doxygen ]; then
+	source ~/etc/chiliproject_doxygen
+else
+	echo "Config file not found ;-("
+	exit -1
+fi
 
 # table
 project_id=
