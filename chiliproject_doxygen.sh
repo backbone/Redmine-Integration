@@ -100,7 +100,7 @@ for i in `seq 0 $((n-1))`; do
 
 	# Lock dir by creating tag file
 	mkdir -p $DOC_PATH/${identifier[$i]} 2>/dev/null
-        echo $LAST_TAG >$DOC_PATH/${identifier[$i]}/tag
+	echo $LAST_TAG >$DOC_PATH/${identifier[$i]}/tag
 	[ $? != 0 ] && echo "echo $LAST_TAG >$DOC_PATH/${identifier[$i]}/tag failed" && rm -rf $TMP_PATH && rm -f $DOC_PATH/${identifier[$i]}/tag && exit -1
 
 	# GENERATING DOCUMENTATION
@@ -113,19 +113,19 @@ for i in `seq 0 $((n-1))`; do
 	# Clone and Checkout
 	case ${type[$i]} in
 	Mercurial|Repository::Mercurial)
-	        hg clone ${root_url[i]} $TMP_PATH/$repo_dir_name && cd $TMP_PATH/$repo_dir_name
-	        [ $? != 0 ] && echo "hg clone ${root_url[i]} $TMP_PATH/$repo_dir_name && cd $TMP_PATH/$repo_dir_name failed" && rm -rf $TMP_PATH && rm -f $DOC_PATH/${identifier[$i]}/tag && exit -1
+		hg clone ${root_url[i]} $TMP_PATH/$repo_dir_name && cd $TMP_PATH/$repo_dir_name
+		[ $? != 0 ] && echo "hg clone ${root_url[i]} $TMP_PATH/$repo_dir_name && cd $TMP_PATH/$repo_dir_name failed" && rm -rf $TMP_PATH && rm -f $DOC_PATH/${identifier[$i]}/tag && exit -1
 		hg up -C $LAST_TAG
 	;;
 	Git|Repository::Git)
-	        git clone ${root_url[i]} $TMP_PATH/$repo_dir_name && cd $TMP_PATH/$repo_dir_name
-	        [ $? != 0 ] && echo "git clone ${root_url[i]} $TMP_PATH/$repo_dir_name && cd $TMP_PATH/$repo_dir_name failed" && rm -rf $TMP_PATH && rm -f $DOC_PATH/${identifier[$i]}/tag && exit -1
+		git clone ${root_url[i]} $TMP_PATH/$repo_dir_name && cd $TMP_PATH/$repo_dir_name
+		[ $? != 0 ] && echo "git clone ${root_url[i]} $TMP_PATH/$repo_dir_name && cd $TMP_PATH/$repo_dir_name failed" && rm -rf $TMP_PATH && rm -f $DOC_PATH/${identifier[$i]}/tag && exit -1
 		git checkout $LAST_TAG
 	;;
 	esac
 
-        # Converting Files to UTF-8 encoding
-        find $TMP_PATH/$repo_dir_name \( ! -regex '.*/\..*' \) -type f -exec detect_encoding_and_convert.sh utf-8 '{}' \;
+	# Converting Files to UTF-8 encoding
+	find $TMP_PATH/$repo_dir_name \( ! -regex '.*/\..*' \) -type f -exec detect_encoding_and_convert.sh utf-8 '{}' \;
 	
 	# Generate doxygen documentation
 	doxygen -g doxygen.conf
@@ -164,9 +164,9 @@ for i in `seq 0 $((n-1))`; do
 	# README in title page
 	README="`find -maxdepth 1 -type f -iname 'readme*' | head -n1`"
 	if [ -f "$README" ]; then
-                sed -i 's~http\(\|s\)\(://[^ \n\t]*\)~<a href="http\1\2">http\1\2</a>~g' README
-	        sed -i 's~$~<br>~' "$README"
-	        sed -i "/<div class=\"contents\">/r $README" html/index.html
+		sed -i 's~http\(\|s\)\(://[^ \n\t]*\)~<a href="http\1\2">http\1\2</a>~g' README
+		sed -i 's~$~<br>~' "$README"
+		sed -i "/<div class=\"contents\">/r $README" html/index.html
 	fi
 
 	# Copy html to $DOC_PATH
