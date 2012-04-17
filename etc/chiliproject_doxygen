@@ -1,6 +1,3 @@
-#!/bin/bash
-#
-
 DOC_PATH=/var/doc/chiliproject
 TMP_PATH=/tmp/chiliproject-doxygen$RANDOM$RANDOM
 MYSQL_USER=chiliproject

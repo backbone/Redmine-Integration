@@ -1,6 +1,3 @@
-#!/bin/bash
-#
-
 export LANG=ru_RU.UTF-8
 RHODECODE_SQLITE_PATH=/home/rhodecode/rhodecode/rhodecode.db
 CHILI_MYSQL_USER=redmine
