@@ -52,6 +52,15 @@ for v in $CHILI_ID_GITORIOUS_REPO; do
 	case $((n%2)) in
 	0) chili_project_id=$v ;;
 	1) gitorious_path=$GITORIOUS_REPOS_PATH/$v.git 
+		# Test for already present repo
+	        ALREADY_EXIST=`mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT id
+	                                                                              FROM $CHILI_MYSQL_DBNAME.repositories
+	                                                                              WHERE url='$gitorious_path'
+	                                                                              OR root_url='$gitorious_path'" \
+	                                                                              | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+2`
+	        [ "$ALREADY_EXIST" != "" ] && continue
+
+		# insert to chiliproject.repositories
 		echo "insert $chili_project_id: $gitorious_path"
 		mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "INSERT INTO $CHILI_MYSQL_DBNAME.repositories(project_id,
 		                                                                                                    url,
