@@ -59,22 +59,22 @@ for v in $CHILI_ID_GITORIOUS_REPO; do
 	                                                                  WHERE url='$gitorious_path'
 	                                                                  OR root_url='$gitorious_path'" \
 	                                                                  | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+2`
-	        [ "$ALREADY_EXIST" != "" ] && continue
-
-		# insert to $CHILI_MYSQL_DBNAME.repositories
-		echo "insert $chili_project_id: $gitorious_path"
-		mysql -h$MYSQL_HOSTNAME -u $MYSQL_USER -e "INSERT INTO $CHILI_MYSQL_DBNAME.repositories(project_id,
-		                                                                                        url,
-		                                                                                        root_url,
-		                                                                                        type,
-		                                                                                        path_encoding,
-		                                                                                        extra_info)
-		                                           VALUES('$chili_project_id',
-		                                                  '$gitorious_path',
-		                                                  '$gitorious_path',
-		                                                  'Git',
-		                                                  '',
-		                                                  '')"
+	        if [ "" == "$ALREADY_EXIST" ]; then
+			# insert to $CHILI_MYSQL_DBNAME.repositories
+			echo "insert $chili_project_id: $gitorious_path"
+			mysql -h$MYSQL_HOSTNAME -u $MYSQL_USER -e "INSERT INTO $CHILI_MYSQL_DBNAME.repositories(project_id,
+			                                                                                        url,
+			                                                                                        root_url,
+			                                                                                        type,
+			                                                                                        path_encoding,
+			                                                                                        extra_info)
+			                                           VALUES('$chili_project_id',
+			                                                  '$gitorious_path',
+			                                                  '$gitorious_path',
+			                                                  'Git',
+			                                                  '',
+			                                                  '')"
+		fi
 	;;
 	esac
 	let n++
