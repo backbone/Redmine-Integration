@@ -21,7 +21,7 @@ for v in $ALL_MYSQL_REPOS; do
         case $((n%3)) in
         0) current_url=$v;;
         1) current_root_url=$v;;
-        2) [ ! -d $current_url -a ! -d $current_root_url ] && repos_to_remove="$repos_to_remove,$v";;
+        2) [ ! -d $current_url/.hg -a ! -d $current_root_url/.hg ] && repos_to_remove="$repos_to_remove,$v";;
         esac
         let n++
 done;
