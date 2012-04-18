@@ -29,7 +29,7 @@ repos_to_remove=${repos_to_remove#,}
 [ "$repos_to_remove" != "" ] && mysql -h$MYSQL_HOSTNAME -u $MYSQL_USER -e "DELETE FROM $CHILI_MYSQL_DBNAME.repositories WHERE id IN ($repos_to_remove)"
 
 # === GET DATA FROM GITORIOUS MYSQL BASE ===
-CHILI_ID_GITORIOUS_REPO=`mysql -h$GITORIOUS_MYSQL_HOSTNAME -u $GITORIOUS_MYSQL_USER -e \
+CHILI_ID_GITORIOUS_REPO=`mysql -h$MYSQL_HOSTNAME -u $GITORIOUS_MYSQL_USER -e \
                         "SELECT DISTINCT $CHILI_MYSQL_DBNAME.projects.id,$GITORIOUS_MYSQL_DBNAME.repositories.hashed_path
                          FROM $CHILI_MYSQL_DBNAME.member_roles,$CHILI_MYSQL_DBNAME.members,$CHILI_MYSQL_DBNAME.projects,$CHILI_MYSQL_DBNAME.roles,
                               $CHILI_MYSQL_DBNAME.users,$GITORIOUS_MYSQL_DBNAME.repositories,$GITORIOUS_MYSQL_DBNAME.roles,$GITORIOUS_MYSQL_DBNAME.users
