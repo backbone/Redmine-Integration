@@ -14,7 +14,7 @@ fi
 ALL_MYSQL_REPOS=`mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT url,root_url,id
                                                                         FROM $CHILI_MYSQL_DBNAME.repositories
                                                                         WHERE type='Mercurial'
-                                                                              OR type='Repository::Mercurial'"
+                                                                              OR type='Repository::Mercurial'" \
                                                                         | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+4`
 repos_to_remove=
 current_url=
