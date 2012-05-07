@@ -11,7 +11,11 @@ else
 fi
 
 # === REMOVE ALL BROKEN REPOSITORY LINKS IN CHILIPROJECT MYSQL DATABASE ===
-ALL_MYSQL_REPOS=`mysql -h$MYSQL_HOSTNAME -u $MYSQL_USER -e "SELECT url,root_url,id FROM $CHILI_MYSQL_DBNAME.repositories WHERE type='Git' OR type='Repository::Git'" | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+4`
+ALL_MYSQL_REPOS=`mysql -h$MYSQL_HOSTNAME -u $MYSQL_USER -e "SELECT url,root_url,id
+                                                            FROM $CHILI_MYSQL_DBNAME.repositories
+                                                            WHERE type='Git'
+                                                                  OR type='Repository::Git'"
+                                                            | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+4`
 repos_to_remove=
 current_url=
 current_root_url=
@@ -31,8 +35,14 @@ repos_to_remove=${repos_to_remove#,}
 # === GET DATA FROM GITORIOUS MYSQL BASE ===
 CHILI_ID_GITORIOUS_REPO=`mysql -h$MYSQL_HOSTNAME -u $MYSQL_USER -e \
                         "SELECT DISTINCT $CHILI_MYSQL_DBNAME.projects.id,$GITORIOUS_MYSQL_DBNAME.repositories.hashed_path
-                         FROM $CHILI_MYSQL_DBNAME.member_roles,$CHILI_MYSQL_DBNAME.members,$CHILI_MYSQL_DBNAME.projects,$CHILI_MYSQL_DBNAME.roles,
-                              $CHILI_MYSQL_DBNAME.users,$GITORIOUS_MYSQL_DBNAME.repositories,$GITORIOUS_MYSQL_DBNAME.roles,$GITORIOUS_MYSQL_DBNAME.users
+                         FROM $CHILI_MYSQL_DBNAME.member_roles,
+                              $CHILI_MYSQL_DBNAME.members,
+                              $CHILI_MYSQL_DBNAME.projects,
+                              $CHILI_MYSQL_DBNAME.roles,
+                              $CHILI_MYSQL_DBNAME.users,
+                              $GITORIOUS_MYSQL_DBNAME.repositories,
+                              $GITORIOUS_MYSQL_DBNAME.roles,
+                              $GITORIOUS_MYSQL_DBNAME.users
                          WHERE $CHILI_MYSQL_DBNAME.member_roles.member_id=$CHILI_MYSQL_DBNAME.members.id
                                AND $CHILI_MYSQL_DBNAME.member_roles.role_id=$CHILI_MYSQL_DBNAME.roles.id
                                AND $CHILI_MYSQL_DBNAME.members.user_id=$CHILI_MYSQL_DBNAME.users.id
@@ -42,8 +52,8 @@ CHILI_ID_GITORIOUS_REPO=`mysql -h$MYSQL_HOSTNAME -u $MYSQL_USER -e \
                                AND $CHILI_MYSQL_DBNAME.users.type='User'
                                AND $CHILI_MYSQL_DBNAME.users.mail=$GITORIOUS_MYSQL_DBNAME.users.email
                                AND $CHILI_MYSQL_DBNAME.roles.name IN ('Инициатор','Менеджер','Major','Manager')
-                               AND $GITORIOUS_MYSQL_DBNAME.repositories.user_id=$GITORIOUS_MYSQL_DBNAME.users.id;
-                        " | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+3`
+                               AND $GITORIOUS_MYSQL_DBNAME.repositories.user_id=$GITORIOUS_MYSQL_DBNAME.users.id;"
+                         | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+3`
 
 # add repositories paths to $CHILI_MYSQL_DBNAME.repositories
 chili_project_id=
@@ -58,8 +68,8 @@ for v in $CHILI_ID_GITORIOUS_REPO; do
 	        ALREADY_EXIST=`mysql -h$MYSQL_HOSTNAME -u $MYSQL_USER -e "SELECT id
 	                                                                  FROM $CHILI_MYSQL_DBNAME.repositories
 	                                                                  WHERE project_id=$chili_project_id
-	                                                                  OR url='$gitorious_path'
-	                                                                  OR root_url='$gitorious_path'" \
+	                                                                        OR url='$gitorious_path'
+	                                                                        OR root_url='$gitorious_path'" \
 	                                                                  | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+2`
 	        if [ "" == "$ALREADY_EXIST" ]; then
 			# insert to $CHILI_MYSQL_DBNAME.repositories

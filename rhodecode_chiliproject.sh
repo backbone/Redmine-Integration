@@ -11,7 +11,11 @@ else
 fi
 
 # === REMOVE ALL BROKEN REPOSITORY LINKS IN CHILIPROJECT MYSQL DATABASE ===
-ALL_MYSQL_REPOS=`mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT url,root_url,id FROM $CHILI_MYSQL_DBNAME.repositories WHERE type='Mercurial' OR type='Repository::Mercurial'" | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+4`
+ALL_MYSQL_REPOS=`mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT url,root_url,id
+                                                                        FROM $CHILI_MYSQL_DBNAME.repositories
+                                                                        WHERE type='Mercurial'
+                                                                              OR type='Repository::Mercurial'"
+                                                                        | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+4`
 repos_to_remove=
 current_url=
 current_root_url=
@@ -26,10 +30,14 @@ for v in $ALL_MYSQL_REPOS; do
         let n++
 done;
 repos_to_remove=${repos_to_remove#,}
-[ "$repos_to_remove" != "" ] && mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "DELETE FROM $CHILI_MYSQL_DBNAME.repositories WHERE id IN ($repos_to_remove)"
+[ "$repos_to_remove" != "" ] && mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "DELETE
+                                                                                       FROM $CHILI_MYSQL_DBNAME.repositories
+                                                                                       WHERE id IN ($repos_to_remove)"
 
 # === GET DATA FROM RHODECODE SQLITE BASE ===
-rh_repos_path=`sqlite3 $RHODECODE_SQLITE_PATH "select ui_value FROM rhodecode_ui where ui_section='paths'"`
+rh_repos_path=`sqlite3 $RHODECODE_SQLITE_PATH "SELECT ui_value
+                                               FROM rhodecode_ui
+                                               WHERE ui_section='paths'"`
 
 SQLITE_RESULTS=`sqlite3 $RHODECODE_SQLITE_PATH "SELECT repo_name,repo_type,users.email
                                                 FROM repositories,users
@@ -57,13 +65,6 @@ done
 # === FOR ALL REPOS FROM RHODECODE DATABASE===
 for i in `seq 0 $((nrepos-1))`; do
 	# === GET DATA FROM CHILIPROJECT MYSQL BASE ===
-	ALREADY_EXIST=`mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT id
-	                                                                      FROM $CHILI_MYSQL_DBNAME.repositories
-	                                                                      WHERE url='${repos_paths[$i]}'
-	                                                                      OR root_url='${repos_paths[$i]}'" \
-	                                                                      | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+2`
-	[ "$ALREADY_EXIST" != "" ] && continue
-
 	USERID=`mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT id
 	                                                               FROM $CHILI_MYSQL_DBNAME.users
 	                                                               WHERE users.status='1'
@@ -74,21 +75,29 @@ for i in `seq 0 $((nrepos-1))`; do
 
 	PROJECTID=`mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT id FROM $CHILI_MYSQL_DBNAME.projects
 	                                                                  WHERE (name='${repos_names[$i]}'
-	                                                                  OR identifier='${repos_names[$i]}')
-	                                                                  AND status='1'" \
+	                                                                         OR identifier='${repos_names[$i]}')
+	                                                                        AND status='1'" \
 	                                                                  | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+2`
 	[ "$PROJECTID" == "" ] && continue
+
+	ALREADY_EXIST=`mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT id
+	                                                                      FROM $CHILI_MYSQL_DBNAME.repositories
+	                                                                      WHERE project_id=$PROJECTID
+	                                                                            OR url='${repos_paths[$i]}'
+	                                                                            OR root_url='${repos_paths[$i]}'" \
+	                                                                      | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+2`
+	[ "$ALREADY_EXIST" != "" ] && continue
 
 	roles_mysql_string=`echo $CHILI_REQUIRED_ROLES | sed "s~\>~'~g ; s~\<~OR roles.name='~g ; s~^OR ~~"`
 	ROLES=`mysql --default-character-set=utf8 -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT roles.name
 	                                                                                           FROM $CHILI_MYSQL_DBNAME.roles,
-	                                                                                           $CHILI_MYSQL_DBNAME.member_roles,
-	                                                                                           $CHILI_MYSQL_DBNAME.members
+	                                                                                                $CHILI_MYSQL_DBNAME.member_roles,
+	                                                                                                $CHILI_MYSQL_DBNAME.members
 	                                                                                           WHERE roles.id=member_roles.role_id
-	                                                                                           AND member_roles.member_id=members.id
-	                                                                                           AND members.user_id='$USERID'
-	                                                                                           AND members.project_id='$PROJECTID'
-	                                                                                           AND ($roles_mysql_string)" \
+	                                                                                                 AND member_roles.member_id=members.id
+	                                                                                                 AND members.user_id='$USERID'
+	                                                                                                 AND members.project_id='$PROJECTID'
+	                                                                                                 AND ($roles_mysql_string)" \
 	                                                                                           | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+2`
 
 	[ "$ROLES" == "" ] && continue
