@@ -31,32 +31,26 @@ repos_to_remove=${repos_to_remove#,}
 # === GET DATA FROM RHODECODE SQLITE BASE ===
 rh_repos_path=`sqlite3 $RHODECODE_SQLITE_PATH "select ui_value FROM rhodecode_ui where ui_section='paths'"`
 
-SQLITE_RESULTS=`sqlite3 $RHODECODE_SQLITE_PATH "SELECT repo_name,repo_type,users.username,users.email,users_groups.users_group_name
-                                                FROM repositories,users,users_groups,users_groups_members
-                                                WHERE repositories.user_id=users.user_id
-                                                AND users.user_id=users_groups_members.user_id
-                                                AND users_groups.users_group_id=users_groups_members.users_group_id;"`
+SQLITE_RESULTS=`sqlite3 $RHODECODE_SQLITE_PATH "SELECT repo_name,repo_type,users.email
+                                                FROM repositories,users
+                                                WHERE repositories.user_id=users.user_id;"`
 
 # initializing repos arrays and count them
 repos_names=
 repos_paths=
 repos_types=
-repos_users=
 repos_mails=
-repos_groups=
 
 let nrepos=0
 for r in $SQLITE_RESULTS; do
-	repos_paths[$nrepos]=$rh_repos_path/${r%|*|*|*|*}
+	repos_paths[$nrepos]=$rh_repos_path/${r%|*|*}
 	tmp=${repos_paths[$nrepos]%/}; repos_names[$nrepos]=${tmp##*/}
-	tmp=${r%|*|*|*}; repos_types[$nrepos]=${tmp#*|}
+	tmp=${r%|*}; repos_types[$nrepos]=${tmp#*|}
 	case ${repos_types[$nrepos]} in
-	hg) repos_types[$nrepos]='Mercurial';;
-	git) repos_types[$nrepos]='Git';;
+		hg) repos_types[$nrepos]='Mercurial';;
+		git) repos_types[$nrepos]='Git';;
 	esac
-	tmp=${r%|*|*}; repos_users[$nrepos]=${tmp#*|*|}
-	tmp=${r%|*}; repos_mails[$nrepos]=${tmp#*|*|*|}
-	repos_groups[$nrepos]=${r#*|*|*|*|}
+	repos_mails[$nrepos]=${tmp#*|*|}
 	let nrepos++
 done
 
@@ -71,17 +65,10 @@ for i in `seq 0 $((nrepos-1))`; do
 	[ "$ALREADY_EXIST" != "" ] && continue
 
 	USERID=`mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT id
-	                                                               FROM $CHILI_MYSQL_DBNAME.users,$CHILI_MYSQL_DBNAME.groups_users
-	                                                               WHERE users.id=groups_users.user_id
-	                                                               AND users.status='1'
-	                                                               AND users.login='${repos_users[$i]}'
-	                                                               AND users.mail='${repos_mails[$i]}'
-	                                                               AND users.type='User'
-	                                                               AND groups_users.group_id=(SELECT id
-	                                                                                          FROM $CHILI_MYSQL_DBNAME.users
-	                                                                                          WHERE users.type='Group'
-	                                                                                          AND users.lastname='${repos_groups[$i]}'
-	                                                                                          AND users.status='1')" \
+	                                                               FROM $CHILI_MYSQL_DBNAME.users
+	                                                               WHERE users.status='1'
+	                                                                     AND users.mail='${repos_mails[$i]}'
+	                                                                     AND users.type='User'" \
 	                                                               | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+2`
 	[ "$USERID" == "" ] && continue
 
