@@ -50,7 +50,7 @@ for r in $SQLITE_RESULTS; do
 		hg) repos_types[$nrepos]='Mercurial';;
 		git) repos_types[$nrepos]='Git';;
 	esac
-	repos_mails[$nrepos]=${tmp#*|*|}
+	repos_mails[$nrepos]=${r#*|*|}
 	let nrepos++
 done
 
