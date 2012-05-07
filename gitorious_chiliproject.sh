@@ -14,7 +14,7 @@ fi
 ALL_MYSQL_REPOS=`mysql -h$MYSQL_HOSTNAME -u $MYSQL_USER -e "SELECT url,root_url,id
                                                             FROM $CHILI_MYSQL_DBNAME.repositories
                                                             WHERE type='Git'
-                                                                  OR type='Repository::Git'"
+                                                                  OR type='Repository::Git'" \
                                                             | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+4`
 repos_to_remove=
 current_url=
