@@ -52,7 +52,7 @@ CHILI_ID_GITORIOUS_REPO=`mysql -h$MYSQL_HOSTNAME -u $MYSQL_USER -e \
                                AND $CHILI_MYSQL_DBNAME.users.type='User'
                                AND $CHILI_MYSQL_DBNAME.users.mail=$GITORIOUS_MYSQL_DBNAME.users.email
                                AND $CHILI_MYSQL_DBNAME.roles.name IN ('Инициатор','Менеджер','Major','Manager')
-                               AND $GITORIOUS_MYSQL_DBNAME.repositories.user_id=$GITORIOUS_MYSQL_DBNAME.users.id;"
+                               AND $GITORIOUS_MYSQL_DBNAME.repositories.user_id=$GITORIOUS_MYSQL_DBNAME.users.id;" \
                          | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+3`
 
 # add repositories paths to $CHILI_MYSQL_DBNAME.repositories
