@@ -88,7 +88,7 @@ for i in `seq 0 $((nrepos-1))`; do
 	                                                                      | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+2`
 	[ "$ALREADY_EXIST" != "" ] && continue
 
-	roles_mysql_string=`echo $CHILI_REQUIRED_ROLES | sed "s~\>~'~g ; s~\<~OR roles.name='~g ; s~^OR ~~"`
+	roles_mysql_string=`echo $CHILI_REQUIRED_ROLES | sed "s~\>~'~g ; s~\<~,'~g ; s~^,~~ ; s~ ~~g"`
 	ROLES=`mysql --default-character-set=utf8 -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT roles.name
 	                                                                                           FROM $CHILI_MYSQL_DBNAME.roles,
 	                                                                                                $CHILI_MYSQL_DBNAME.member_roles,
@@ -97,7 +97,7 @@ for i in `seq 0 $((nrepos-1))`; do
 	                                                                                                 AND member_roles.member_id=members.id
 	                                                                                                 AND members.user_id='$USERID'
 	                                                                                                 AND members.project_id='$PROJECTID'
-	                                                                                                 AND ($roles_mysql_string)" \
+	                                                                                                 AND roles.name IN ($roles_mysql_string)" \
 	                                                                                           | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+2`
 
 	[ "$ROLES" == "" ] && continue
