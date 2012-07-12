@@ -174,6 +174,7 @@ for i in `seq 0 $((n-1))`; do
 	[ $? != 0 ] && echo "mkdir -p $DOC_PATH/${identifier[$i]} failed" && rm -rf $TMP_PATH && rm -f $DOC_PATH/${identifier[$i]}/tag && exit -1
 	rm -rf $DOC_PATH/${identifier[$i]}/html
 	cp -r html $DOC_PATH/${identifier[$i]}
+	sed 's~\<pdflatex\>~pdflatex -interaction batchmode~g' -i latex/Makefile
 	make -C latex -f Makefile
 	cp -f latex/refman.pdf $DOC_PATH/${identifier[$i]}/html/$repo_dir_name-$LAST_TAG.pdf
 
