@@ -130,7 +130,7 @@ for i in `seq 0 $((n-1))`; do
 	# Generate doxygen documentation
 	doxygen -g doxygen.conf
 	sed "
-	s~^PROJECT_NAME.*$~PROJECT_NAME = ~;
+	s~^PROJECT_NAME.*$~PROJECT_NAME = $repo_dir_name-$LAST_TAG~;
 	s~^OUTPUT_LANGUAGE.*$~OUTPUT_LANGUAGE = English~;
 	s~^BUILTIN_STL_SUPPORT.*$~BUILTIN_STL_SUPPORT = YES~;
 	s~^EXTRACT_ALL.*$~EXTRACT_ALL = YES~;
@@ -145,7 +145,7 @@ for i in `seq 0 $((n-1))`; do
 	s~^VERBATIM_HEADERS.*$~VERBATIM_HEADERS = NO~;
 	s~^REFERENCED_BY_RELATION.*$~REFERENCED_BY_RELATION = YES~;
 	s~^REFERENCED_RELATION.*$~REFERENCED_RELATION = YES~;
-	s~^GENERATE_LATEX.*$~GENERATE_LATEX = NO~;
+	s~^GENERATE_LATEX.*$~GENERATE_LATEX = YES~;
 	s~^HAVE_DOT.*$~HAVE_DOT = YES~;
 	s~^UML_LOOK.*$~UML_LOOK = YES~;
 	s~^TEMPLATE_RELATIONS.*$~TEMPLATE_RELATIONS = YES~;
@@ -156,7 +156,7 @@ for i in `seq 0 $((n-1))`; do
 	" -i doxygen.conf
 
 	# project name and version in the footer
-	echo "<hr />$repo_dir_name-$LAST_TAG" > footer.html
+	echo "<hr /><a href=\"$repo_dir_name-$LAST_TAG.pdf\">$repo_dir_name-$LAST_TAG.pdf</a>" > footer.html
 
 	# run doxygen generator
 	doxygen doxygen.conf
@@ -174,6 +174,8 @@ for i in `seq 0 $((n-1))`; do
 	[ $? != 0 ] && echo "mkdir -p $DOC_PATH/${identifier[$i]} failed" && rm -rf $TMP_PATH && rm -f $DOC_PATH/${identifier[$i]}/tag && exit -1
 	rm -rf $DOC_PATH/${identifier[$i]}/html
 	cp -r html $DOC_PATH/${identifier[$i]}
+	make -C latex -f Makefile
+	cp -f latex/refman.pdf $DOC_PATH/${identifier[$i]}/html/$repo_dir_name-$LAST_TAG.pdf
 
 	# remove temp dir
 	cd $TMP_PATH
