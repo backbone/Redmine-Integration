@@ -110,12 +110,10 @@ for i in `seq 0 $((nrepos-1))`; do
 	                                                                                                    url,
 	                                                                                                    root_url,
 	                                                                                                    type,
-	                                                                                                    path_encoding,
-	                                                                                                    extra_info)
+	                                                                                                    path_encoding)
 	                                                       VALUES('$PROJECTID',
 	                                                              '${repos_paths[$i]}',
 	                                                              '${repos_paths[$i]}',
 	                                                              '${repos_types[$i]}',
-	                                                              '',
 	                                                              '')"
 done
