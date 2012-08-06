@@ -106,18 +106,17 @@ for i in `seq 0 $((n-1))`; do
 	# GENERATING DOCUMENTATION
 	echo "Generating documentation for ${root_url[$i]}"
 
-	# cp directory to $TMP_PATH
-	repo_dir_name=${root_url[i]%/}
-	repo_dir_name=${repo_dir_name##*/}
-
 	# Clone and Checkout
 	case ${type[$i]} in
 	Mercurial|Repository::Mercurial)
+		repo_dir_name=${root_url[i]%/}
+		repo_dir_name=${repo_dir_name##*/}
 		hg clone ${root_url[i]} $TMP_PATH/$repo_dir_name && cd $TMP_PATH/$repo_dir_name
 		[ $? != 0 ] && echo "hg clone ${root_url[i]} $TMP_PATH/$repo_dir_name && cd $TMP_PATH/$repo_dir_name failed" && rm -rf $TMP_PATH && rm -f $DOC_PATH/${identifier[$i]}/tag && exit -1
 		hg up -C $LAST_TAG
 	;;
 	Git|Repository::Git)
+		repo_dir_name=${identifier[$i]}
 		git clone ${root_url[i]} $TMP_PATH/$repo_dir_name && cd $TMP_PATH/$repo_dir_name
 		[ $? != 0 ] && echo "git clone ${root_url[i]} $TMP_PATH/$repo_dir_name && cd $TMP_PATH/$repo_dir_name failed" && rm -rf $TMP_PATH && rm -f $DOC_PATH/${identifier[$i]}/tag && exit -1
 		git checkout $LAST_TAG
