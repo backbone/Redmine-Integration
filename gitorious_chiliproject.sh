@@ -34,7 +34,7 @@ repos_to_remove=${repos_to_remove#,}
 
 # === GET DATA FROM GITORIOUS MYSQL BASE ===
 roles_mysql_string=`echo $CHILI_REQUIRED_ROLES | sed "s~\>~'~g ; s~\<~,'~g ; s~^,~~ ; s~ ~~g"`
-CHILI_ID_GITORIOUS_REPO=`mysql -h$MYSQL_HOSTNAME -u $MYSQL_USER -e \
+CHILI_ID_GITORIOUS_REPO=`mysql --default-character-set=utf8 -h$MYSQL_HOSTNAME -u $MYSQL_USER -e \
                         "SELECT DISTINCT $CHILI_MYSQL_DBNAME.projects.id,$GITORIOUS_MYSQL_DBNAME.repositories.hashed_path
                          FROM $CHILI_MYSQL_DBNAME.member_roles,
                               $CHILI_MYSQL_DBNAME.members,
