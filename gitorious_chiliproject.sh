@@ -79,13 +79,11 @@ for v in $CHILI_ID_GITORIOUS_REPO; do
 			                                                                                        url,
 			                                                                                        root_url,
 			                                                                                        type,
-			                                                                                        path_encoding,
-			                                                                                        extra_info)
+			                                                                                        path_encoding)
 			                                           VALUES('$chili_project_id',
 			                                                  '$gitorious_path',
 			                                                  '$gitorious_path',
 			                                                  'Git',
-			                                                  '',
 			                                                  '')"
 		fi
 	;;
