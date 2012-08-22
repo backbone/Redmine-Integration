@@ -77,14 +77,13 @@ for i in `seq 0 $((n-1))`; do
 	LAST_TAG=""
 	case ${type[$i]} in
 	Mercurial|Repository::Mercurial)
-		LAST_TAG=`hg tags --color never --noninteractive --quiet -R ${root_url[i]} 2>/dev/null | head -n2 | grep -v '^tip$' \
-		          | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+'`
+		LAST_TAG=`hg tags --color never --noninteractive --quiet -R ${root_url[i]} 2>/dev/null \
+		          | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+' | sort -Vr |  head -n1`
 	;;
 	Git|Repository::Git)
 		cd ${root_url[$i]}
 		[ $? != 0 ] && echo "cd ${root_url[$i]} failed" && continue
-		LAST_TAG=`git tag | tail -n1 \
-		          | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+'`
+		LAST_TAG=`git tag | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+' | sort -Vr | head -n1`
 		cd $TMP_PATH
 	;;
 	esac
