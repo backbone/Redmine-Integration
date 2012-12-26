@@ -127,8 +127,11 @@ for i in `seq 0 $((n-1))`; do
 	
 	# Generate doxygen documentation
 	doxygen -g doxygen.conf
+	# Get full project name
+	PROJECT_NAME=`mysql -h127.0.0.1 -u $MYSQL_USER --default-character-set=utf8 -e "SELECT name FROM $MYSQL_DBNAME.projects WHERE id=${project_id[$i]}" | grep -v tables_col|xargs| sed "s/ /\n/g"|tail -n+2`
+
 	sed "
-	s~^PROJECT_NAME.*$~PROJECT_NAME = $repo_dir_name-$LAST_TAG~;
+	s~^PROJECT_NAME.*$~PROJECT_NAME = $PROJECT_NAME-$LAST_TAG~;
 	s~^OUTPUT_LANGUAGE.*$~OUTPUT_LANGUAGE = English~;
 	s~^BUILTIN_STL_SUPPORT.*$~BUILTIN_STL_SUPPORT = YES~;
 	s~^EXTRACT_ALL.*$~EXTRACT_ALL = YES~;
