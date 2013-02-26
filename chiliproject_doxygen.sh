@@ -154,6 +154,7 @@ for i in `seq 0 $((n-1))`; do
 	s~^CALLER_GRAPH.*$~CALLER_GRAPH = YES~;
 	s~^EXCLUDE_PATTERNS.*$~EXCLUDE_PATTERNS = .hg .git~;
 	s~^HTML_FOOTER.*$~HTML_FOOTER = footer.html~;
+	s~^EXTRA_PACKAGES.*$~EXTRA_PACKAGES = babel~;
 	" -i doxygen.conf
 
 	# project name and version in the footer
@@ -176,6 +177,7 @@ for i in `seq 0 $((n-1))`; do
 	rm -rf $DOC_PATH/${identifier[$i]}/html
 	cp -r html $DOC_PATH/${identifier[$i]}
 	sed 's~\<pdflatex\>~pdflatex -interaction batchmode~g' -i latex/Makefile
+	sed 's~\\usepackage{babel}~\\usepackage[russian]{babel}~' -i latex/refman.tex
 	make -C latex -f Makefile
 	cp -f latex/refman.pdf $DOC_PATH/${identifier[$i]}/html/$repo_dir_name-$LAST_TAG.pdf
 
