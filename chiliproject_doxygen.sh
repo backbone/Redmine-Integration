@@ -38,7 +38,10 @@ done;
 let n/=3
 
 # read $MYSQL_DBNAME.projects to table
-MYSQL_RESULT=`mysql -h127.0.0.1 -u $MYSQL_USER -e "SELECT id, identifier FROM $MYSQL_DBNAME.projects" | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+3`
+MYSQL_RESULT=`mysql -h127.0.0.1 -u $MYSQL_USER -e "SELECT projects.id, projects.identifier
+    FROM $MYSQL_DBNAME.projects, $MYSQL_DBNAME.enabled_modules
+    WHERE $MYSQL_DBNAME.projects.id=$MYSQL_DBNAME.enabled_modules.project_id
+    AND $MYSQL_DBNAME.enabled_modules.name='redmine_embedded'" | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+3`
 last_idx=0
 let i=0
 for v in $MYSQL_RESULT; do
