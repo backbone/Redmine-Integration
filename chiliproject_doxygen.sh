@@ -21,7 +21,10 @@ identifier=
 umask 0002
 
 # read $MYSQL_DBNAME.repositories to table
-MYSQL_RESULT=`mysql -h127.0.0.1 -u $MYSQL_USER -e "SELECT project_id, type, root_url FROM $MYSQL_DBNAME.repositories" | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+4`
+MYSQL_RESULT=`mysql -h127.0.0.1 -u $MYSQL_USER -e "SELECT repositories.project_id, repositories.type, repositories.root_url
+    FROM $MYSQL_DBNAME.repositories, $MYSQL_DBNAME.enabled_modules
+    WHERE $MYSQL_DBNAME.repositories.project_id=$MYSQL_DBNAME.enabled_modules.project_id
+    AND $MYSQL_DBNAME.enabled_modules.name='redmine_embedded'" | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+4`
 let n=0
 for v in $MYSQL_RESULT; do
 	let idx=n/3
