@@ -79,12 +79,14 @@ for v in $CHILI_ID_GITORIOUS_REPO; do
 			                                                                                        url,
 			                                                                                        root_url,
 			                                                                                        type,
-			                                                                                        path_encoding)
+			                                                                                        path_encoding,
+			                                                                                        is_default)
 			                                           VALUES('$chili_project_id',
 			                                                  '$gitorious_path',
 			                                                  '$gitorious_path',
 			                                                  'Repository::Git',
-			                                                  '')"
+			                                                  '',
+			                                                  1)"
 		fi
 	;;
 	esac
