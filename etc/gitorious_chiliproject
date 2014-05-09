@@ -4,4 +4,4 @@ MYSQL_HOSTNAME=127.0.0.1
 GITORIOUS_MYSQL_DBNAME=gitorious
 CHILI_MYSQL_DBNAME=chiliproject
 GITORIOUS_REPOS_PATH=/var/www/gitorious/repositories
-CHILI_REQUIRED_ROLES="Ответственный Менеджер Major Manager"
+CHILI_REQUIRED_ROLES="Ответственный Менеджер Major Manager Responsible"
