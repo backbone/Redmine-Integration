@@ -70,7 +70,7 @@ for d in *; do
 			break
 		fi
 	done
-	[ $found == false ] && rm -rf $d
+	[ $found = 0 ] && rm -rf $d
 done
 
 # generate documentation
