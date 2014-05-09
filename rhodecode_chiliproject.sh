@@ -55,8 +55,8 @@ for r in $SQLITE_RESULTS; do
 	tmp=${repos_paths[$nrepos]%/}; repos_names[$nrepos]=${tmp##*/}
 	tmp=${r%|*}; repos_types[$nrepos]=${tmp#*|}
 	case ${repos_types[$nrepos]} in
-		hg) repos_types[$nrepos]='Mercurial';;
-		git) repos_types[$nrepos]='Git';;
+		hg) repos_types[$nrepos]='Repository::Mercurial';;
+		git) repos_types[$nrepos]='Repository::Git';;
 	esac
 	repos_mails[$nrepos]=${r#*|*|}
 	let nrepos++

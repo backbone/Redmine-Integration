@@ -83,7 +83,7 @@ for v in $CHILI_ID_GITORIOUS_REPO; do
 			                                           VALUES('$chili_project_id',
 			                                                  '$gitorious_path',
 			                                                  '$gitorious_path',
-			                                                  'Git',
+			                                                  'Repository::Git',
 			                                                  '')"
 		fi
 	;;
