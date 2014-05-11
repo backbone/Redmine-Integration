@@ -74,8 +74,7 @@ for i in `seq 0 $((nrepos-1))`; do
 	[ "$USERID" == "" ] && continue
 
 	PROJECTID=`mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT DISTINCT id FROM $CHILI_MYSQL_DBNAME.projects
-	                                                                  WHERE (name='${repos_names[$i]}'
-	                                                                         OR identifier='${repos_names[$i]}')
+	                                                                  WHERE name='${repos_names[$i]}'
 	                                                                        AND status='1'" \
 	                                                                  | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+2`
 	[ "$PROJECTID" == "" ] && continue

@@ -48,8 +48,7 @@ CHILI_ID_GITORIOUS_REPO=`mysql --default-character-set=utf8 -h$MYSQL_HOSTNAME -u
                                AND $CHILI_MYSQL_DBNAME.member_roles.role_id=$CHILI_MYSQL_DBNAME.roles.id
                                AND $CHILI_MYSQL_DBNAME.members.user_id=$CHILI_MYSQL_DBNAME.users.id
                                AND $CHILI_MYSQL_DBNAME.members.project_id=$CHILI_MYSQL_DBNAME.projects.id
-                               AND ($CHILI_MYSQL_DBNAME.projects.name=$GITORIOUS_MYSQL_DBNAME.repositories.name
-                                    OR $CHILI_MYSQL_DBNAME.projects.identifier=$GITORIOUS_MYSQL_DBNAME.repositories.name)
+                               AND $CHILI_MYSQL_DBNAME.projects.name=$GITORIOUS_MYSQL_DBNAME.repositories.name
                                AND $CHILI_MYSQL_DBNAME.users.type='User'
                                AND $CHILI_MYSQL_DBNAME.users.mail=$GITORIOUS_MYSQL_DBNAME.users.email
                                AND $CHILI_MYSQL_DBNAME.roles.name IN ($roles_mysql_string)
