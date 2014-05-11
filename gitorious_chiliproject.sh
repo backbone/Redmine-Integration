@@ -32,6 +32,19 @@ done;
 repos_to_remove=${repos_to_remove#,}
 [ "$repos_to_remove" != "" ] && mysql -h$MYSQL_HOSTNAME -u $MYSQL_USER -e "DELETE FROM $CHILI_MYSQL_DBNAME.repositories WHERE id IN ($repos_to_remove)"
 
+# === REMOVE REPOSITORY LINKS WITH DIFFERENT PROJECT NAMES ===
+REMOVE_IDS=`mysql -h$MYSQL_HOSTNAME -u $MYSQL_USER -e "SELECT $CHILI_MYSQL_DBNAME.repositories.id
+                                                       FROM $CHILI_MYSQL_DBNAME.projects,
+                                                            $CHILI_MYSQL_DBNAME.repositories,
+                                                            $GITORIOUS_MYSQL_DBNAME.repositories
+                                                       WHERE ($CHILI_MYSQL_DBNAME.repositories.url=CONCAT('$GITORIOUS_REPOS_PATH/',$GITORIOUS_MYSQL_DBNAME.repositories.hashed_path,'.git')
+						              OR $CHILI_MYSQL_DBNAME.repositories.root_url=CONCAT('$GITORIOUS_REPOS_PATH/',$GITORIOUS_MYSQL_DBNAME.repositories.hashed_path,'.git'))
+							     AND $CHILI_MYSQL_DBNAME.projects.name <> $GITORIOUS_MYSQL_DBNAME.repositories.name
+						             AND $CHILI_MYSQL_DBNAME.projects.id = $CHILI_MYSQL_DBNAME.repositories.project_id
+                                                       ;" \
+                                                       | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+2`
+[ "$REMOVE_IDS" != "" ] && mysql -h$MYSQL_HOSTNAME -u $MYSQL_USER -e "DELETE FROM $CHILI_MYSQL_DBNAME.repositories WHERE id IN ($REMOVE_IDS)"
+
 # === GET DATA FROM GITORIOUS MYSQL BASE ===
 roles_mysql_string=`echo $CHILI_REQUIRED_ROLES | sed "s~\>~'~g ; s~\<~,'~g ; s~^,~~ ; s~ ~~g"`
 CHILI_ID_GITORIOUS_REPO=`mysql --default-character-set=utf8 -h$MYSQL_HOSTNAME -u $MYSQL_USER -e \
