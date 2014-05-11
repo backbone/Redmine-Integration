@@ -79,6 +79,18 @@ for i in `seq 0 $((nrepos-1))`; do
 	                                                                  | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+2`
 	[ "$PROJECTID" == "" ] && continue
 
+	REMOVE_ID=`mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT repositories.id
+	                                                                  FROM $CHILI_MYSQL_DBNAME.repositories,$CHILI_MYSQL_DBNAME.projects
+	                                                                  WHERE (repositories.url='${repos_paths[$i]}'
+	                                                                        OR repositories.root_url='${repos_paths[$i]}')
+	                                                                        AND repositories.project_id=projects.id
+	                                                                        AND projects.name <> '${repos_names[$i]}'" \
+	                                                                  | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+2`
+
+	[ "$REMOVE_ID" != "" ] && mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "DELETE
+	                                                                                 FROM $CHILI_MYSQL_DBNAME.repositories
+	                                                                                 WHERE id = '$REMOVE_ID'"
+
 	ALREADY_EXIST=`mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT id
 	                                                                      FROM $CHILI_MYSQL_DBNAME.repositories
 	                                                                      WHERE project_id='$PROJECTID'
