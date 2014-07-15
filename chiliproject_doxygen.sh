@@ -133,8 +133,8 @@ for i in `seq 0 $((n-1))`; do
 	
 	if [ -f valadoc_env ]; then
 		echo "Generating documentation using Valadoc"
-		VALA_BASEDIR=`grep -v '\.\.' valadoc_env | grep '^BASEDIR=[-+A-z0-9. ]\+$' | cut -d= -f2`
-		VALA_PKGS=`grep -v '\.\.' valadoc_env | grep '^PKGS=[-+A-z0-9. ]\+$' | cut -d= -f2 | sed 's~\(^\| \)~ --pkg=~g; s~^ ~~'`
+		VALA_BASEDIR=`grep -v '\.\.' valadoc_env | grep '^BASEDIR=[-+A-Za-z0-9. ]\+$' | cut -d= -f2`
+		VALA_PKGS=`grep -v '\.\.' valadoc_env | grep '^PKGS=[-+A-Za-z0-9. ]\+$' | cut -d= -f2 | sed 's~\(^\| \)~ --pkg=~g; s~^ ~~'`
 		echo VALA_BASEDIR=$VALA_BASEDIR
 		echo VALA_PKGS=$VALA_PKGS
 		valadoc -o $repo_dir_name-$LAST_TAG --no-protected -b "$VALA_BASEDIR" `find "$VALA_BASEDIR" -type f -name "*.vala" -or -name '*.vapi'` $VALA_PKGS
