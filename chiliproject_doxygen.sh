@@ -180,6 +180,12 @@ for i in `seq 0 $((n-1))`; do
 		# run doxygen generator
 		doxygen doxygen.conf
 
+		# Fix Fonts in the Redmine's Header
+		sed -i 's~^body, table, div, p, dl {$~table, p, dl {~' html/doxygen.css
+		#bad sed '/^h1\.groupheader {/,+3 d' html/doxygen.css
+		sed -i '/^h1\.groupheader {$/,/^}$/d' html/doxygen.css
+		sed -i '/^a {$/,/^}$/d' html/doxygen.css
+
 		# README in title page
 		README="`find -maxdepth 1 -type f -iname 'readme*' | head -n1`"
 		if [ -f "$README" ]; then
