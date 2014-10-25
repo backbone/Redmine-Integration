@@ -1,4 +1,4 @@
-DOC_PATH=/var/doc/chiliproject
-TMP_PATH=/tmp/chiliproject-doxygen$RANDOM$RANDOM
-MYSQL_USER=chiliproject
-MYSQL_DBNAME=chiliproject
+DOC_PATH=/var/doc/redmine
+TMP_PATH=/tmp/redmine-doxygen$RANDOM$RANDOM
+MYSQL_USER=redmine
+MYSQL_DBNAME=redmine
