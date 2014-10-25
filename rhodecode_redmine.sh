@@ -1,18 +1,18 @@
 #!/bin/bash
 
 # load config files
-if [ -f /etc/rhodecode_chiliproject ]; then
-	source /etc/rhodecode_chiliproject
-elif [ -f ~/etc/rhodecode_chiliproject ]; then
-	source ~/etc/rhodecode_chiliproject
+if [ -f /etc/rhodecode_redmine ]; then
+	source /etc/rhodecode_redmine
+elif [ -f ~/etc/rhodecode_redmine ]; then
+	source ~/etc/rhodecode_redmine
 else
 	echo "Config file not found ;-("
 	exit -1
 fi
 
-# === REMOVE ALL BROKEN REPOSITORY LINKS IN CHILIPROJECT MYSQL DATABASE ===
-ALL_MYSQL_REPOS=`mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT url,root_url,id
-                                                                        FROM $CHILI_MYSQL_DBNAME.repositories
+# === REMOVE ALL BROKEN REPOSITORY LINKS IN REDMINE MYSQL DATABASE ===
+ALL_MYSQL_REPOS=`mysql -h$REDMINE_MYSQL_HOSTNAME -u $REDMINE_MYSQL_USER -e "SELECT url,root_url,id
+                                                                        FROM $REDMINE_MYSQL_DBNAME.repositories
                                                                         WHERE type='Mercurial'
                                                                               OR type='Repository::Mercurial'" \
                                                                         | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+4`
@@ -30,8 +30,8 @@ for v in $ALL_MYSQL_REPOS; do
         let n++
 done;
 repos_to_remove=${repos_to_remove#,}
-[ "$repos_to_remove" != "" ] && mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "DELETE
-                                                                                       FROM $CHILI_MYSQL_DBNAME.repositories
+[ "$repos_to_remove" != "" ] && mysql -h$REDMINE_MYSQL_HOSTNAME -u $REDMINE_MYSQL_USER -e "DELETE
+                                                                                       FROM $REDMINE_MYSQL_DBNAME.repositories
                                                                                        WHERE id IN ($repos_to_remove)"
 
 # === GET DATA FROM RHODECODE SQLITE BASE ===
@@ -64,46 +64,46 @@ done
 
 # === FOR ALL REPOS FROM RHODECODE DATABASE===
 for i in `seq 0 $((nrepos-1))`; do
-	# === GET DATA FROM CHILIPROJECT MYSQL BASE ===
-	USERID=`mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT id
-	                                                               FROM $CHILI_MYSQL_DBNAME.users
+	# === GET DATA FROM REDMINE MYSQL BASE ===
+	USERID=`mysql -h$REDMINE_MYSQL_HOSTNAME -u $REDMINE_MYSQL_USER -e "SELECT id
+	                                                               FROM $REDMINE_MYSQL_DBNAME.users
 	                                                               WHERE users.status='1'
 	                                                                     AND users.mail='${repos_mails[$i]}'
 	                                                                     AND users.type='User'" \
 	                                                               | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+2`
 	[ "$USERID" == "" ] && continue
 
-	PROJECTID=`mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT DISTINCT id FROM $CHILI_MYSQL_DBNAME.projects
+	PROJECTID=`mysql -h$REDMINE_MYSQL_HOSTNAME -u $REDMINE_MYSQL_USER -e "SELECT DISTINCT id FROM $REDMINE_MYSQL_DBNAME.projects
 	                                                                  WHERE name='${repos_names[$i]}'
 	                                                                        AND status='1'" \
 	                                                                  | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+2`
 	[ "$PROJECTID" == "" ] && continue
 
-	REMOVE_ID=`mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT repositories.id
-	                                                                  FROM $CHILI_MYSQL_DBNAME.repositories,$CHILI_MYSQL_DBNAME.projects
+	REMOVE_ID=`mysql -h$REDMINE_MYSQL_HOSTNAME -u $REDMINE_MYSQL_USER -e "SELECT repositories.id
+	                                                                  FROM $REDMINE_MYSQL_DBNAME.repositories,$REDMINE_MYSQL_DBNAME.projects
 	                                                                  WHERE (repositories.url='${repos_paths[$i]}'
 	                                                                        OR repositories.root_url='${repos_paths[$i]}')
 	                                                                        AND repositories.project_id=projects.id
 	                                                                        AND projects.name <> '${repos_names[$i]}'" \
 	                                                                  | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+2`
 
-	[ "$REMOVE_ID" != "" ] && mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "DELETE
-	                                                                                 FROM $CHILI_MYSQL_DBNAME.repositories
+	[ "$REMOVE_ID" != "" ] && mysql -h$REDMINE_MYSQL_HOSTNAME -u $REDMINE_MYSQL_USER -e "DELETE
+	                                                                                 FROM $REDMINE_MYSQL_DBNAME.repositories
 	                                                                                 WHERE id = '$REMOVE_ID'"
 
-	ALREADY_EXIST=`mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT id
-	                                                                      FROM $CHILI_MYSQL_DBNAME.repositories
+	ALREADY_EXIST=`mysql -h$REDMINE_MYSQL_HOSTNAME -u $REDMINE_MYSQL_USER -e "SELECT id
+	                                                                      FROM $REDMINE_MYSQL_DBNAME.repositories
 	                                                                      WHERE project_id='$PROJECTID'
 	                                                                            OR url='${repos_paths[$i]}'
 	                                                                            OR root_url='${repos_paths[$i]}'" \
 	                                                                      | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+2`
 	[ "$ALREADY_EXIST" != "" ] && continue
 
-	roles_mysql_string=`echo $CHILI_REQUIRED_ROLES | sed "s~\>~'~g ; s~\<~,'~g ; s~^,~~ ; s~ ~~g"`
-	ROLES=`mysql --default-character-set=utf8 -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "SELECT roles.name
-	                                                                                           FROM $CHILI_MYSQL_DBNAME.roles,
-	                                                                                                $CHILI_MYSQL_DBNAME.member_roles,
-	                                                                                                $CHILI_MYSQL_DBNAME.members
+	roles_mysql_string=`echo $REDMINE_REQUIRED_ROLES | sed "s~\>~'~g ; s~\<~,'~g ; s~^,~~ ; s~ ~~g"`
+	ROLES=`mysql --default-character-set=utf8 -h$REDMINE_MYSQL_HOSTNAME -u $REDMINE_MYSQL_USER -e "SELECT roles.name
+	                                                                                           FROM $REDMINE_MYSQL_DBNAME.roles,
+	                                                                                                $REDMINE_MYSQL_DBNAME.member_roles,
+	                                                                                                $REDMINE_MYSQL_DBNAME.members
 	                                                                                           WHERE roles.id=member_roles.role_id
 	                                                                                                 AND member_roles.member_id=members.id
 	                                                                                                 AND members.user_id='$USERID'
@@ -113,11 +113,11 @@ for i in `seq 0 $((nrepos-1))`; do
 
 	[ "$ROLES" == "" ] && continue
 
-	# === ATTACH RHODECODE REPOSITORY TO CHILIPROJECT ===
+	# === ATTACH RHODECODE REPOSITORY TO REDMINE ===
 	# DEBUG
 	echo "insert $PROJECTID,${repos_paths[$i]},${repos_types[$i]}"
 
-	mysql -h$CHILI_MYSQL_HOSTNAME -u $CHILI_MYSQL_USER -e "INSERT INTO $CHILI_MYSQL_DBNAME.repositories(project_id,
+	mysql -h$REDMINE_MYSQL_HOSTNAME -u $REDMINE_MYSQL_USER -e "INSERT INTO $REDMINE_MYSQL_DBNAME.repositories(project_id,
 	                                                                                                    url,
 	                                                                                                    root_url,
 	                                                                                                    type,

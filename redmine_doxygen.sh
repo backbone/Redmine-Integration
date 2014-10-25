@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # load config files
-if [ -f /etc/chiliproject_doxygen ]; then
-	source /etc/chiliproject_doxygen
-elif [ -f ~/etc/chiliproject_doxygen ]; then
-	source ~/etc/chiliproject_doxygen
+if [ -f /etc/redmine_doxygen ]; then
+	source /etc/redmine_doxygen
+elif [ -f ~/etc/redmine_doxygen ]; then
+	source ~/etc/redmine_doxygen
 else
 	echo "Config file not found ;-("
 	exit -1
