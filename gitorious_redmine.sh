@@ -54,6 +54,7 @@ REDMINE_ID_GITORIOUS_REPO=`mysql --default-character-set=utf8 -h$MYSQL_HOSTNAME 
                               $REDMINE_MYSQL_DBNAME.projects,
                               $REDMINE_MYSQL_DBNAME.roles,
                               $REDMINE_MYSQL_DBNAME.users,
+                              $REDMINE_MYSQL_DBNAME.email_addresses,
                               $GITORIOUS_MYSQL_DBNAME.repositories,
                               $GITORIOUS_MYSQL_DBNAME.roles,
                               $GITORIOUS_MYSQL_DBNAME.users
@@ -63,7 +64,9 @@ REDMINE_ID_GITORIOUS_REPO=`mysql --default-character-set=utf8 -h$MYSQL_HOSTNAME 
                                AND $REDMINE_MYSQL_DBNAME.members.project_id=$REDMINE_MYSQL_DBNAME.projects.id
                                AND $REDMINE_MYSQL_DBNAME.projects.name=$GITORIOUS_MYSQL_DBNAME.repositories.name
                                AND $REDMINE_MYSQL_DBNAME.users.type='User'
-                               AND $REDMINE_MYSQL_DBNAME.users.mail=$GITORIOUS_MYSQL_DBNAME.users.email
+                               AND $REDMINE_MYSQL_DBNAME.email_addresses.address=$GITORIOUS_MYSQL_DBNAME.users.email
+                               AND $REDMINE_MYSQL_DBNAME.users.id=$REDMINE_MYSQL_DBNAME.email_addresses.user_id
+                               AND $REDMINE_MYSQL_DBNAME.email_addresses.is_default='1'
                                AND $REDMINE_MYSQL_DBNAME.roles.name IN ($roles_mysql_string)
                                AND $GITORIOUS_MYSQL_DBNAME.repositories.user_id=$GITORIOUS_MYSQL_DBNAME.users.id;" \
                          | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+3`

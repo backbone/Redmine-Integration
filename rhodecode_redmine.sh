@@ -66,9 +66,11 @@ done
 for i in `seq 0 $((nrepos-1))`; do
 	# === GET DATA FROM REDMINE MYSQL BASE ===
 	USERID=`mysql -h$REDMINE_MYSQL_HOSTNAME -u $REDMINE_MYSQL_USER -e "SELECT id
-	                                                               FROM $REDMINE_MYSQL_DBNAME.users
+	                                                               FROM $REDMINE_MYSQL_DBNAME.users,$REDMINE_MYSQL_DBNAME.email_addresses
 	                                                               WHERE users.status='1'
-	                                                                     AND users.mail='${repos_mails[$i]}'
+	                                                                     AND email_addresses.address='${repos_mails[$i]}'
+	                                                                     AND email_addresses.is_default='1'
+	                                                                     AND users.id=email_addresses.user_id
 	                                                                     AND users.type='User'" \
 	                                                               | grep -v tables_col|xargs|sed "s/ /\n/g"|tail -n+2`
 	[ "$USERID" == "" ] && continue
