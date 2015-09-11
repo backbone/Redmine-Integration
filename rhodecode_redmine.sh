@@ -65,7 +65,7 @@ done
 # === FOR ALL REPOS FROM RHODECODE DATABASE===
 for i in `seq 0 $((nrepos-1))`; do
 	# === GET DATA FROM REDMINE MYSQL BASE ===
-	USERID=`mysql -h$REDMINE_MYSQL_HOSTNAME -u $REDMINE_MYSQL_USER -e "SELECT id
+	USERID=`mysql -h$REDMINE_MYSQL_HOSTNAME -u $REDMINE_MYSQL_USER -e "SELECT users.id
 	                                                               FROM $REDMINE_MYSQL_DBNAME.users,$REDMINE_MYSQL_DBNAME.email_addresses
 	                                                               WHERE users.status='1'
 	                                                                     AND email_addresses.address='${repos_mails[$i]}'
