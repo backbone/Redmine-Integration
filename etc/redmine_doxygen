@@ -1,4 +1,4 @@
 DOC_PATH=/var/doc/redmine
 TMP_PATH=/tmp/redmine-doxygen$RANDOM$RANDOM
-MYSQL_USER=redmine
+MYSQL_USER=redmine_doc
 MYSQL_DBNAME=redmine
