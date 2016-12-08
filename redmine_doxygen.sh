@@ -105,7 +105,7 @@ for i in `seq 0 $((n-1))`; do
 
 	# Lock dir by creating tag file
 	mkdir -p $DOC_PATH/${identifier[$i]} 2>/dev/null
-	echo $LAST_TAG >$DOC_PATH/${identifier[$i]}/tag
+	(echo $LAST_TAG >$DOC_PATH/${identifier[$i]}/tag) 2>/dev/null
 	[ $? != 0 ] && echo "echo $LAST_TAG >$DOC_PATH/${identifier[$i]}/tag failed" && rm -rf $TMP_PATH && rm -f $DOC_PATH/${identifier[$i]}/tag && exit -1
 
 	# GENERATING DOCUMENTATION
